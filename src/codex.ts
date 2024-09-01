@@ -3,6 +3,7 @@ import fs from "fs";
 import { performance } from "perf_hooks";
 import { ICompletionModel } from "./completionModel";
 import { trimCompletion } from "./syntax";
+import 'dotenv/config';
 
 const defaultPostOptions = {
   max_tokens: 100, // maximum number of tokens to return
