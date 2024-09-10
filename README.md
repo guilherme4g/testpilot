@@ -153,3 +153,62 @@ respond.
 
 We thank Aryaz Eghbali (@aryaze) for his work on the initial version of
 TestPilot.
+
+___
+
+___
+
+# TestPilot - Update 10/09/2024
+
+Me chamo José Guilherme, sou estudando da Universidade Federal de Pernambuco (*UFPE*), e estou usando o Test Pilot como base para o meu TCC, a ideia é fazer um comparativo entre os resultados das pequisas atingidos com o gpt-5, mas especificamente o modelo *gpt-3.5-turbo-0301*, e o modelos mais recentes criados pela Open IA, o *gpt-4o*.
+
+A seguir vou evidenciar algumas diferenças alguns updates com relação aos modelos usados na pesquisa anterior e esclarecer mudanças que fiz e como executar o testes.
+
+## Mudanças
+
+O modelo *gpt-3.5-turbo-0301* já foi descontinuado, sendo assim é impossível replicar o testes com o mesmo modelo. O *code-cushman-002* segue o mesmo caminho. E o Star code (vou completar depois) ??
+
+## Como Executar
+
+Vou adicionar mais algumas informações de como executar o projeto por conta de alguns ajustes que fiz para facilitar a execução e monitoria.
+
+### 1. Criar arquivo .env
+Depois de baixar o projeto você deve criar o arquivo *.env* e replicar as variáveis contidas no *.env.example*.
+
+A variável *TESTPILOT_LLM_API_ENDPOINT* contém a rota da Open IA que será chamada para criar os testes unitários. No exemplo temos:
+
+https://api.openai.com/v1/engines/\<Open IA Model\>/completions
+
+E onde tem o \<Open IA Model\> deve ser alterado pelo modelo que você deseja usar, por exemplo o *gpt-3.5-turbo-instruct*.
+
+Ja a variável *TESTPILOT_LLM_AUTH_HEADERS*, dado o exemplo abaixo:
+
+TESTPILOT_LLM_AUTH_HEADERS='{"Authorization": "Bearer \<your API key\>", "OpenAI-Organization": "\<your organization ID\>", "OpenAI-Project": "\<your project ID\>"}'
+
+têm 3 espaços nos quais os valores devem ser preenchidos.
+
+Você deve primeiro criar um projeto. Siga o tutorial:
+https://help.openai.com/en/articles/9186755-managing-your-work-in-the-api-platform-with-projects
+
+Organization ID: https://platform.openai.com/settings/organization/general
+
+API Key: https://platform.openai.com/api-keys
+
+Project ID: Na interface da Open IA, siga o caminho no lado esquerdo, siga para Project -> General. Nessa página estará o project ID.
+
+### 2. Instalar as LIB's
+
+Execute o npm install ou npm i.
+
+### 3. Executar o Test Pilot
+
+Primeiro você precisa instalar o pacote que deseja testar, ou seja, execute o comando:
+
+>*npm i \<package\>*
+
+Na sequência execute o comando:
+
+>*npm run build && node benchmark/run.js --outputDir \<dir\>  --package \<package\>*
+
+O dir pode ser o nome diretorio que você deseja e o package é o que você instalou antes e deseja testar.
+
