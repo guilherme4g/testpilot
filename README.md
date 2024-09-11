@@ -202,7 +202,13 @@ Execute o npm install ou npm i para instalar os pacotes do Test Pilot.
 
 ### 3. Baixar o Projeto Alvo de Teste
 
-Via NPM, https://www.npmjs.com/, busque a lib que você deseja testar. Siga para o repositório do pacote, no github ou gitlab, e baixe o pacote na mesma pasta que o Test Pilot. Ou seja, caso o Test Pilot estela na pasta *documents*, a lib precisa ser baixada também na classe *documents*.
+Via NPM, https://www.npmjs.com/, busque a lib que você deseja testar.
+
+Salve o repositório remoto da lib, porque vamos precisar mais para frente.
+
+Instale a lib no TestPilot.
+
+Com o link do repositorio remoto, busque o comando parabaixar a lib na sua maquina. Instale ela na pasta do Test Pilot.
 
 ### 4. Executar o Test Pilot
 

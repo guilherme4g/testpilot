@@ -67,7 +67,6 @@ export class MochaValidator extends TestValidator {
     );
 
     const packagePath = path.resolve(this.testDir, "..");
-
     // temporary directory to store output from mocha and nyc
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "mocha-validator"));
     // directory to store nyc profile and coverage data
@@ -101,6 +100,7 @@ export class MochaValidator extends TestValidator {
         killSignal: "SIGKILL",
       }
     );
+
     performance.measure(`duration:${testName}`, `start:${testName}`);
     const stderr = res.stderr.toString();
     const report = MochaValidator.tryParseReport(reportFile);
@@ -194,7 +194,7 @@ export class MochaValidator extends TestValidator {
       child_process.spawnSync(
         path.join(__dirname, "..", "node_modules", ".bin", "nyc"),
         [
-          `--report-dir=${path.join(testDir, "coverage")}`,
+          `--report-dir=${path.join("..", testDir, "coverage")}`,
           "--reporter=json-summary",
           "report",
         ],
@@ -204,7 +204,6 @@ export class MochaValidator extends TestValidator {
         }
       );
 
-      // TO DO
       const coverageSummaryFileName = path.join(
         testDir,
         "coverage",
