@@ -204,6 +204,7 @@ export class MochaValidator extends TestValidator {
         }
       );
 
+      // TO DO
       const coverageSummaryFileName = path.join(
         testDir,
         "coverage",

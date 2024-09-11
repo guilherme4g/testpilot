@@ -198,17 +198,17 @@ Project ID: Na interface da Open IA, siga o caminho no lado esquerdo, siga para 
 
 ### 2. Instalar as LIB's
 
-Execute o npm install ou npm i.
+Execute o npm install ou npm i para instalar os pacotes do Test Pilot.
 
-### 3. Executar o Test Pilot
+### 3. Baixar o Projeto Alvo de Teste
 
-Primeiro você precisa instalar o pacote que deseja testar, ou seja, execute o comando:
+Via NPM, https://www.npmjs.com/, busque a lib que você deseja testar. Siga para o repositório do pacote, no github ou gitlab, e baixe o pacote na mesma pasta que o Test Pilot. Ou seja, caso o Test Pilot estela na pasta *documents*, a lib precisa ser baixada também na classe *documents*.
 
->*npm i \<package\>*
+### 4. Executar o Test Pilot
 
-Na sequência execute o comando:
+Execute o comando:
 
 >*npm run build && node benchmark/run.js --outputDir \<dir\>  --package \<package\>*
 
-O dir pode ser o nome diretorio que você deseja e o package é o que você instalou antes e deseja testar.
+O dir é nome diretorio que você deseja que o resultado seja armazenado e o package é o diretorio da lib baixada.
 
