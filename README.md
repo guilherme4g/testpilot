@@ -65,7 +65,7 @@ test -f "$package_path/package.json" && echo "OK: package.json encontrado"
 Volte no diretório do test pilot e execute o comando:
 
 ```sh
-npm run build && node benchmark/run.js --outputDir "$(pwd)/<output_package>" --package \<package_path\>
+npm run build && node benchmark/run.js --outputDir "$project_path/output_package" --package "$package_path"
 ```
 
 O dir é o caminho que você deseja salvar o resultado e o path-package é o caminho absoluto do package que salvamos no passo 3. 
