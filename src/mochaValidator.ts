@@ -180,6 +180,11 @@ export class MochaValidator extends TestValidator {
     try {
       // create/clean .nyc_output directory
       const nycOutput = path.join(this.packagePath, ".nyc_output");
+
+      //
+      console.log(`nycOutput - ${nycOutput}`)
+      //
+
       if (fs.existsSync(nycOutput)) {
         fs.rmdirSync(nycOutput, { recursive: true });
       }
@@ -190,19 +195,44 @@ export class MochaValidator extends TestValidator {
         MochaValidator.copyCoverageData(coverageDir, nycOutput);
       }
 
+      // updated: due to error in search by nyc
+      
       // create nyc report
-      child_process.spawnSync(
-        path.join(__dirname, "..", "node_modules", ".bin", "nyc"),
+      // child_process.spawnSync(
+      //   path.join(__dirname, "..", "node_modules", ".bin", "nyc"),
+      //   [
+      //     `--report-dir=${path.join("..", testDir, "coverage")}`,
+      //     "--reporter=json-summary",
+      //     "report",
+      //   ],
+      //   {
+      //     cwd: this.packagePath,
+      //     stdio: "inherit",
+      //   }
+      // );
+
+      // new code
+      // create nyc report
+      const nycBin = path.join(__dirname, "..", "node_modules", ".bin", "nyc");
+      // garante que a pasta de destino existe (ok usar absoluto)
+      fs.mkdirSync(path.join(testDir, "coverage"), { recursive: true });
+      const res = child_process.spawnSync(
+        nycBin,
         [
-          `--report-dir=${path.join("..", testDir, "coverage")}`,
+          `--report-dir=${path.join(testDir, "coverage")}`, // <<< usa testDir absoluto
           "--reporter=json-summary",
           "report",
         ],
         {
           cwd: this.packagePath,
           stdio: "inherit",
+          shell: false,
         }
       );
+      if (res.status !== 0) {
+        throw new Error(`nyc report failed with status ${res.status}`);
+      }
+      // updated: due to error in search by nyc
 
       const coverageSummaryFileName = path.join(
         testDir,
