@@ -3,12 +3,14 @@ import fs from "fs";
 import { performance } from "perf_hooks";
 import { ICompletionModel } from "./completionModel";
 import { trimCompletion } from "./syntax";
+import 'dotenv/config';
 
 const defaultPostOptions = {
   max_tokens: 100, // maximum number of tokens to return
   temperature: 0, // sampling temperature; higher values increase diversity
   n: 5, // number of completions to return
   top_p: 1, // no need to change this
+  model: "gpt-5"
 };
 export type PostOptions = Partial<typeof defaultPostOptions>;
 
@@ -34,7 +36,7 @@ export class Codex implements ICompletionModel {
       : getEnv("TESTPILOT_LLM_API_ENDPOINT");
     this.authHeaders = this.isStarCoder
       ? "{}"
-      : getEnv("TESTPILOT_LLM_AUTH_HEADERS");
+      : getEnv("TESTPILOT_LLM_AUTH_HEADERS");  
     console.log(
       `Using ${this.isStarCoder ? "StarCoder" : "GPT"} API at ${
         this.apiEndpoint
@@ -77,8 +79,17 @@ export class Codex implements ICompletionModel {
           },
         }
       : {
-          prompt,
-          ...options,
+          messages: [
+            {
+              "role": "developer",
+              "content": "you are helpful assistant, answer only completes test send by user"
+            },
+            {
+              "role": "user",
+              "content": prompt
+            }
+          ],
+          model: options.model,
         };
 
     const res = await axios.post(this.apiEndpoint, postOptions, { headers });
@@ -111,7 +122,8 @@ export class Codex implements ICompletionModel {
         if (choice.finish_reason === "content_filter") {
           numContentFiltered++;
         }
-        completions.add(choice.text);
+        console.log(choice);
+        completions.add(choice.message.content);
       }
     }
     if (numContentFiltered > 0) {
@@ -119,6 +131,7 @@ export class Codex implements ICompletionModel {
         `${numContentFiltered} completions were truncated due to content filtering.`
       );
     }
+
     return completions;
   }
 

@@ -59,6 +59,8 @@ export async function runExperiment(
       break;
     }
 
+    console.log(`worklist ${workList.length}`); //DEBUG
+
     const { fun } = workList.shift()!;
     await generator.generateAndValidateTests(fun);
   }
