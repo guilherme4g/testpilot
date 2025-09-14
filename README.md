@@ -45,7 +45,9 @@ mkdir project-with-libs
 cd project-with-libs
 npm init -y
 npm i <package_name>
-npm i --no-save mocha
+cd node_modules/<package_name>
+npm i
+npm i -D mocha # or npm i --no-save mocha
 ```
 
 ### 3. Recupere o caminho e teste se é válido
@@ -56,7 +58,6 @@ Mantendo-se no diretório project-with-libs, execute os comandos:
 project_path="$(pwd)"
 echo "$project_path"
 package_path="$(pwd)/node_modules/<package_name>"
-echo "$package_path"
 test -f "$package_path/package.json" && echo "OK: package.json encontrado"
 ```
 
@@ -65,9 +66,45 @@ test -f "$package_path/package.json" && echo "OK: package.json encontrado"
 Volte no diretório do test pilot e execute o comando:
 
 ```sh
-npm run build && node benchmark/run.js --outputDir "$project_path/output_package" --package "$package_path"
+npm run build && node benchmark/run.js --outputDir "$project_path/output_<package_name>" --package "$package_path"
 ```
 
 O dir é o caminho que você deseja salvar o resultado e o path-package é o caminho absoluto do package que salvamos no passo 3. 
 
 
+### 5. Analise dos resultados
+
+Você deve baixar uma versão do CodeQL via esse link:
+https://github.com/github/codeql-cli-binaries/releases
+
+E executar a sequencia de comandos para usar o CodeQL CLI no WSL 2
+```sh
+mkdir -p ~/codeql
+unzip -q ~/downloads/codeql-linux64.zip -d ~/
+chmod +x ~/codeql
+echo 'export PATH="$HOME/codeql:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+which codeql
+codeql --version # para confirmar a instalacao
+```
+
+Vá ao diretório do project-with-libs e execute o comando:
+```sh
+codeql database create ~/codeql-dbs/tcc-analysis \
+  --language=javascript \
+  --source-root /home/wsl/documents/tcc/project-with-libs
+```
+
+Volte ao diretório do test-pilot e execute o comando:
+```sh
+codeql database analyze ~/codeql-dbs/tcc-analysis \
+  /home/wsl/documents/tcc/testpilot/ql/queries \
+  --format=sarifv2 \
+  --output ~/codeql-dbs/tcc-analysis.sarif
+```
+LGTM_INDEX_FILTERS=$'include:**/*.json \
+exclude:**/coverageData/**/*.json' \
+  codeql database create --overwrite \
+  -l javascript \
+  --source-root /home/wsl/documents/tcc/project-with-libs/output_glob \
+  -- /home/wsl/codeql-dbs/output-glob-db
