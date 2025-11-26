@@ -181,10 +181,6 @@ export class MochaValidator extends TestValidator {
       // create/clean .nyc_output directory
       const nycOutput = path.join(this.packagePath, ".nyc_output");
 
-      //
-      console.log(`nycOutput - ${nycOutput}`)
-      //
-
       if (fs.existsSync(nycOutput)) {
         fs.rmdirSync(nycOutput, { recursive: true });
       }
@@ -219,7 +215,7 @@ export class MochaValidator extends TestValidator {
       const res = child_process.spawnSync(
         nycBin,
         [
-          `--report-dir=${path.join(testDir, "coverage")}`, // <<< usa testDir absoluto
+          `--report-dir=${path.join(testDir, "coverage")}`, // <<< testDir absoluto
           "--reporter=json-summary",
           "report",
         ],
