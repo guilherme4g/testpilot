@@ -8,9 +8,9 @@ import 'dotenv/config';
 const defaultPostOptions = {
   max_tokens: 100, // maximum number of tokens to return
   temperature: 0, // sampling temperature; higher values increase diversity
-  n: 5, // number of completions to return
+  n: 5, // number of completions to return - deprecreated
   top_p: 1, // no need to change this
-  model: "gpt-5"
+  model: "gpt-5.1" // gpt-4.1 - gpt-5.1
 };
 export type PostOptions = Partial<typeof defaultPostOptions>;
 
@@ -36,7 +36,7 @@ export class Codex implements ICompletionModel {
       : getEnv("TESTPILOT_LLM_API_ENDPOINT");
     this.authHeaders = this.isStarCoder
       ? "{}"
-      : getEnv("TESTPILOT_LLM_AUTH_HEADERS");  
+      : getEnv("TESTPILOT_LLM_AUTH_HEADERS");
     console.log(
       `Using ${this.isStarCoder ? "StarCoder" : "GPT"} API at ${
         this.apiEndpoint
@@ -75,23 +75,19 @@ export class Codex implements ICompletionModel {
           parameters: {
             max_new_tokens: options.max_tokens,
             temperature: options.temperature || 0.01, // StarCoder doesn't allow 0
-            n: options.n,
+            //n: options.n,
           },
         }
       : {
-          messages: [
-            {
-              "role": "developer",
-              "content": "you are helpful assistant, answer only completes test send by user"
-            },
-            {
-              "role": "user",
-              "content": prompt
-            }
-          ],
           model: options.model,
+          instructions: "You are a helpful assistant. You must ONLY continue and complete the JavaScript test code snippet provided by the user. Do not rewrite any part of the code already provided. Do not add imports, comments, explanations, or any text outside the test code. Do not modify the structure of the test suite. Only generate the minimal continuation required to complete the test as the user expects. Never add new tests or change test behavior. The maximum allowed output is 100 completion tokens.",
+          input: prompt,
+          "temperature": options.temperature,
+          //"n": options.n,
+          "max_output_tokens": options.max_tokens
         };
 
+    // console.log(postOptions); // DEBUG REQUEST PROMPT
     const res = await axios.post(this.apiEndpoint, postOptions, { headers });
 
     performance.measure(
@@ -118,12 +114,16 @@ export class Codex implements ICompletionModel {
     if (this.isStarCoder) {
       completions.add(json.generated_text);
     } else {
-      for (const choice of json.choices || [{ text: "" }]) {
-        if (choice.finish_reason === "content_filter") {
-          numContentFiltered++;
-        }
-        console.log(choice);
-        completions.add(choice.message.content);
+      const outputs = json.output || [];
+
+      for (const output of outputs) {
+        console.log(output.content); // DEBUG RESPONSE
+        const parts = output.content || [];
+        const text = parts
+          .map((p: any) => p.text || "")
+          .join("");
+      
+        completions.add(text);
       }
     }
     if (numContentFiltered > 0) {
