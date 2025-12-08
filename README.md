@@ -122,41 +122,22 @@ npm run build && node benchmark/run.js --outputDir "$output_path" --package "$pa
 O outputDir é o caminho que você deseja salvar o resultado e o package é o caminho absoluto do package que salvamos no passo 3. 
 
 
-<!-- ### 5. Analise dos resultados
+### 5. Analise dos resultados
 
--- a fazer -->
+Install the CodeQL CLI as described in the [documentation](https://docs.github.com/en/code-security/codeql-cli/getting-started-with-the-codeql-cli/setting-up-the-codeql-cli).
 
-<!-- Você deve baixar uma versão do CodeQL via esse link:
-https://github.com/github/codeql-cli-binaries/releases
+In ./ql, run `codeql pack install` to install the CodeQL libraries for JavaScript.
 
-E executar a sequencia de comandos para usar o CodeQL CLI no WSL 2
+Execute os seguintes comandos para gerar o database:
 ```sh
-mkdir -p ~/codeql
-unzip -q ~/downloads/codeql-linux64.zip -d ~/
-chmod +x ~/codeql
-echo 'export PATH="$HOME/codeql:$PATH"' >> ~/.zshrc
-source ~/.zshrc
-which codeql
-codeql --version # para confirmar a instalacao
+
+export dbdir="$(pwd)/db"
+export artifact_dir="$(pwd)/outputs/gpt41"
+LGTM_INDEX_FILTERS='include:**/*.json
+    exclude:**/coverageData/**/*.json' codeql database create --overwrite -l javascript --source-root $artifact_dir -- $dbdir
 ```
 
-Vá ao diretório do project-with-libs e execute o comando:
+Depois execute o .ql que você deseja:
 ```sh
-codeql database create ~/codeql-dbs/tcc-analysis \
-  --language=javascript \
-  --source-root /home/wsl/documents/tcc/project-with-libs
+codeql query run ./testpilot/ql/queries/<any.ql> --database="$dbdir"
 ```
-
-Volte ao diretório do test-pilot e execute o comando:
-```sh
-codeql database analyze ~/codeql-dbs/tcc-analysis \
-  /home/wsl/documents/tcc/testpilot/ql/queries \
-  --format=sarifv2 \
-  --output ~/codeql-dbs/tcc-analysis.sarif
-```
-LGTM_INDEX_FILTERS=$'include:**/*.json \
-exclude:**/coverageData/**/*.json' \
-  codeql database create --overwrite \
-  -l javascript \
-  --source-root /home/wsl/documents/tcc/project-with-libs/output_glob \
-  -- /home/wsl/codeql-dbs/output-glob-db -->
