@@ -10,7 +10,7 @@ const defaultPostOptions = {
   temperature: 0, // sampling temperature; higher values increase diversity
   n: 5, // number of completions to return - deprecreated
   top_p: 1, // no need to change this
-  model: "gpt-5.1" // gpt-4.1 - gpt-5.1
+  model: "gpt-5.2" // gpt-4.1 - gpt-5.2
 };
 export type PostOptions = Partial<typeof defaultPostOptions>;
 
