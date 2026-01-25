@@ -1,33 +1,27 @@
 # Trabalho de Graduação de Curso
 
 Meu nome é José Guilherme e sou estudante da Universidade Federal de Pernambuco (UFPE). 
-Este repositório faz parte do meu Trabalho de Conclusão de Curso, no qual utilizo a ferramenta 
-**TestPilot** para investigar a evolução dos Grandes Modelos de Linguagem (LLMs) na geração 
+Este repositório contém os artefatos do meu Trabalho de Conclusão de Curso (TCC), que investiga, com o uso da ferramenta ***TestPilot***, a evolução dos Grandes Modelos de Linguagem (LLMs) na geração 
 automatizada de testes unitários em JavaScript.
 
-O objetivo principal é **comparar os resultados alcançados no estudo original de Schäfer et al. (2024)**, 
-que teve como modelo com maior destaque o *gpt-3.5-turbo-0301*, com os resultados obtidos por modelos modernos da 
-OpenAI, especificamente **GPT-4.1** e **GPT-5.1**.
+**O objetivo é comparar os resultados alcançados no estudo original de Schäfer et al. (2024)** — cujo modelo de maior destaque foi o ***gpt-3.5-turbo-0301*** — com os resultados obtidos por modelos mais recentes da OpenAI, especificamente ***gpt-4.1*** e ***gpt-5.2***.
 
 ---
 
 ## 🛠️ Mudanças em relação ao estudo original
 
-O estudo de Schäfer et al. (2024) utilizava uma API e formatos de requisição que não suporta modelos mais novos. 
-Assim, foram necessárias adaptações para manter a metodologia equivalente e permitir comparações válidas.
+No estudo original, os modelos eram acessados por meio do endpoint ***v1/engines/{model}/completions***, o qual se tornou obsoleto e, consequentemente, não oferece suporte a modelos mais recentes.
 
-O estudo original usava o endpoint antigo de completions.  
-A pesquisa atual utiliza o endpoint moderno:
+Por conta disso foi necessário usar  o endpoint ***/v1/responses*** [indicado pela Open IA](https://platform.openai.com/docs/guides/migrate-to-responses). Essa mudança introduz diferenças técnicas relevantes em relação à API anteriormente utilizada, dentre as quais destacam-se:
 
-- **POST /v1/responses**
+-  A necessidade de fornecer instruções explícitas ao modelo, uma vez que o novo endpoint não se limita à simples completação de texto, exigindo a definição clara do comportamento esperado por meio do prompt.
+- A ausência do parâmetro `n`, anteriormente utilizado para a geração de múltiplas respostas em uma única requisição.
 
-Com as seguintes particularidades:
+A primeira diferença é mitigada pela especificação do formato e o conteúdo esperados na resposta do modelo. 
 
-- O conteúdo do prompt é passado em **`input`**
-- A orientação do modelo (antes representada por “system prompt”) é passada em **`instructions`**
-- O parâmetro `n` **não existe mais na API moderna**
+Em relação à ausência do parâmetro n, observa-se uma redução na diversidade amostral quando comparada ao estudo original. No entanto, considerando que a temperatura utilizada foi fixada em 0, tanto no estudo original quanto nesta pesquisa, entende-se que o impacto dessa limitação sobre a variabilidade dos resultados é reduzido.
 
-De acordo com o meu ponto de vista o impacto não é extremo a ponto de tornar os resultados gerados hoje invalidos para comparação.
+Além disso, conforme evidenciado nos resultados apresentados, a diferença observada mostra-se reduzida, não indicando impacto significativo sobre a comparabilidade dos resultados. Dessa forma, tais diferenças são tratadas como limitações técnicas decorrentes da evolução da API.
 
 ---
 
@@ -141,3 +135,83 @@ Depois execute o .ql que você deseja:
 ```sh
 codeql query run ./testpilot/ql/queries/<any.ql> --database="$dbdir"
 ```
+
+---
+
+## 📊 Resultados
+
+Na pasta [***google drive***](https://drive.google.com/drive/folders/1KUNtjMSVIaff_iGIhXniym9I2_lgod1h?usp=sharing) encontram-se arquivos compactados organizados por modelo avaliado. Cada arquivo `.zip` corresponde a um modelo específico (por exemplo, *gpt-4.1*) e contém todas as execuções realizadas pela ferramenta **TestPilot** para as diferentes bibliotecas analisadas utilizando esse modelo.
+
+Esses arquivos compactados representam as saídas brutas dos experimentos e servem como base para a construção da base de dados do estudo. Após a descompactação dos arquivos e a criação da base de dados, seguindo os procedimentos descritos anteriormente, é possível extrair os resultados apresentados neste TCC por meio das métricas descritas a seguir.
+
+### **Testes válidos**
+
+Para cada biblioteca avaliada, os resultados dos testes gerados encontram-se organizados em uma pasta específica, a qual contém um arquivo denominado `report.json`. Nesse arquivo, o objeto principal inclui a propriedade `stats`, responsável por armazenar estatísticas relacionadas à execução dos testes, conforme o padrão ilustrado a seguir:
+
+```json
+{
+  ...
+  "stats": {
+    "nrTests": 98,
+    "nrPasses": 21,
+    "nrFailures": 77,
+    "nrPending": 0,
+    "nrOther": 0,
+    "apiExplorationTime": 2.3451609999999903,
+    "docCommentExtractionTime": 12.475443000000013,
+    "snippetExtractionTime": 4.031181000000004,
+    "codexQueryTime": 279599.72940000007,
+    "totalTime": 352849.837028
+  }
+  ...
+}
+```
+
+### **Cobertura de código**
+
+No mesmo arquivo report.json, encontra-se também a propriedade coverage, que armazena as métricas de cobertura de código obtidas a partir da execução dos testes gerados. Essas métricas incluem cobertura de linhas, instruções, funções e ramos, conforme exemplificado a seguir:
+
+```json
+{
+  ...
+  "coverage": {
+    "total": {
+      "lines": {
+        "total": 136,
+        "covered": 113,
+        "skipped": 0,
+        "pct": 83.08
+      },
+      "statements": {
+        "total": 143,
+        "covered": 119,
+        "skipped": 0,
+        "pct": 83.21
+      },
+      "functions": {
+        "total": 31,
+        "covered": 27,
+        "skipped": 0,
+        "pct": 87.09
+      },
+      "branches": {
+        "total": 88,
+        "covered": 54,
+        "skipped": 0,
+        "pct": 61.36
+      }
+      ...
+    }
+    ...
+  }
+  ...
+}
+```
+
+### **Testes não triviais**
+
+A identificação de testes não triviais é realizada por meio da execução das consultas `TrivialTests.ql` e TrivialPassedTest.ql sobre a base de dados construída a partir das execuções do TestPilot.
+
+### **Tipos de falhas nos testes**
+
+A classificação dos tipos de falhas observadas nos testes gerados é obtida a partir da execução da consulta `FailureClassification.ql`, permitindo uma análise detalhada das causas de falha identificadas nos testes produzidos pelos modelos avaliados.
